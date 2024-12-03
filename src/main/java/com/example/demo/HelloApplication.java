@@ -18,6 +18,21 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class HelloApplication extends Application {
+    public enum Lane {
+        LEFT_LANE(50),
+        MIDDLE_LANE(150),
+        RIGHT_LANE(250);
+
+        private final int value;
+
+        Lane(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
     private static final int WINDOW_WIDTH = 400;
     private static final int WINDOW_HEIGHT = 400;
     private static final int BACKGROUND_WIDTH = 400;
@@ -26,23 +41,18 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        //start the background scroll animation and set stage
         Scene scene = loadBg(primaryStage);
 
+        //create the round robin scheduler for the bot rockets
         Scheduler scheduler = new Scheduler(50);
          rocket r1 = new rocket(20000, (Pane)scene.getRoot());
-         rocket r2 = new rocket(2000, (Pane)scene.getRoot());
-         rocket r3 = new rocket(1000, (Pane)scene.getRoot());
 
          scheduler.addRocket(r1);
-         scheduler.addRocket(r2);
-         scheduler.addRocket(r3);
-
          new Thread(r1).start();
-         new Thread(r2).start();
-         new Thread(r3).start();
-
          scheduler.start();
 
+         //function to create and start the player's rocket thread
         loadRocket(scene, 300, 100);
 
 
@@ -55,22 +65,22 @@ public class HelloApplication extends Application {
     public Scene loadBg(Stage primaryStage) {
         Pane root = new Pane();
 
-        // Load the background image
+        // Load background image
         Image backgroundImage = new Image("demo-bg.png"); // Replace with your image path
 
-        // Create two ImageView instances for seamless scrolling
+        // Create two ImageView instances for scrolling
         ImageView background1 = new ImageView(backgroundImage);
         ImageView background2 = new ImageView(backgroundImage);
 
-        // Position the second image below the first one
+        // position the second image below the first one
         background1.setFitWidth(BACKGROUND_WIDTH);
         background1.setFitHeight(BACKGROUND_HEIGHT);
 
         background2.setFitWidth(BACKGROUND_WIDTH);
         background2.setFitHeight(BACKGROUND_HEIGHT);
-        background2.setLayoutY(-BACKGROUND_HEIGHT); // Place it above the first image
+        background2.setLayoutY(-BACKGROUND_HEIGHT);
 
-        // Add the images to the pane
+        // Add images to the pane
         root.getChildren().addAll(background1, background2);
 
         // Create the scrolling animation
@@ -98,11 +108,16 @@ public class HelloApplication extends Application {
     }
 
     public void loadRocket(Scene scene, int y, int speed) {
+        //get root pane to put the rocket on
         Pane pane = (Pane) scene.getRoot();
         rocketShip rocket = new rocketShip(Lane.MIDDLE_LANE, y, speed);
         pane.getChildren().add(rocket.rocketNode);
+
+        //create a thread for the rocket
         Thread t1 = new Thread(rocket);
         t1.start();
+
+        //set what happens when the payer clicks on left and right arrows
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case LEFT -> rocket.moveLeft();
@@ -114,16 +129,13 @@ public class HelloApplication extends Application {
     public static class rocketShip implements Runnable {
 
         private final ImageView rocketNode;
-        private final int speed;
-        private volatile boolean running = true; // Flag to control the thread
-        private final int windowWidth = 400; // Width of the window
+        private volatile boolean running = true; // flag to control the thread
         public static Lane lane = Lane.MIDDLE_LANE;
 
         public rocketShip(Lane lane, int startY, int speed) {
             rocketShip.lane = lane;
-            this.speed = speed;
-            rocketNode = new ImageView(new Image("img.png")); // Replace with your image path
-            rocketNode.setFitWidth(100); // Adjust size
+            rocketNode = new ImageView(new Image("img.png"));
+            rocketNode.setFitWidth(100);
             rocketNode.setFitHeight(100);
             rocketNode.setX(lane.getValue());
             rocketNode.setY(startY);
@@ -162,41 +174,21 @@ public class HelloApplication extends Application {
         public void run() {
             while (running) {
                 try {
-                    // Placeholder for continuous updates (e.g., animations or AI logic)
                     Thread.sleep(16); // ~60 FPS update rate
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     break;
                 }
 
-                // Any real-time updates can be done here
             }
         }
 
         public void stop() {
             running = false;
         }
-
-
     }
 
-    public enum Lane {
-        LEFT_LANE(50),
-        MIDDLE_LANE(150),
-        RIGHT_LANE(250);
-
-        private final int value;
-
-        Lane(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-    }
-
-    public static class Scheduler {
+    public static class Scheduler { //round-robin schedular
         private final Queue<rocket> rocketQueue = new LinkedList<>();
         private final int timeQuantum; // Time slice in milliseconds
         private boolean isRunning = true;
@@ -214,16 +206,16 @@ public class HelloApplication extends Application {
             new Thread(() -> {
                 while (isRunning) {
                     if (!rocketQueue.isEmpty()) {
-                        rocket rocket = rocketQueue.poll(); // Get the next car
+                        rocket rocket = rocketQueue.poll(); // Get the next rocket
                         synchronized (rocket) {
-                            rocket.notify(); // Activate the car thread
+                            rocket.notify(); // Activate the rocket thread
                         }
                         try {
-                            Thread.sleep(timeQuantum); // Allow the car to run for the time slice
+                            Thread.sleep(timeQuantum); // allow the car to rocket for the time slice
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                         }
-                        rocketQueue.offer(rocket); // Re-add the car to the end of the queue
+                        rocketQueue.offer(rocket); // Re-add the rocket to the end of the queue
                     }
                 }
             }).start();
@@ -256,13 +248,13 @@ public class HelloApplication extends Application {
 
                 switch (l) {
                     case RIGHT_LANE:
-                        this.lane = Lane.MIDDLE_LANE; // Right can only move to Middle
+                        this.lane = Lane.MIDDLE_LANE;
                         break;
                     case MIDDLE_LANE:
-                        this.lane = direction == 1 ? Lane.LEFT_LANE : Lane.RIGHT_LANE; // Middle can move to Left or Right
+                        this.lane = direction == 1 ? Lane.LEFT_LANE : Lane.RIGHT_LANE;
                         break;
                     case LEFT_LANE:
-                        this.lane = Lane.MIDDLE_LANE; // Left can only move to Middle
+                        this.lane = Lane.MIDDLE_LANE;
                         break;
                 }
 
@@ -273,7 +265,7 @@ public class HelloApplication extends Application {
 
             public rocket(int time,Pane gamePane) {
                 this.lane = getRandomLane();
-                this.positionY = 100 + (int)(Math.random()*300);
+                this.positionY = 0;
                 this.time = time;
 
                 this.rocketNode = new ImageView(new Image("img.png"));
@@ -285,12 +277,22 @@ public class HelloApplication extends Application {
                 this.gamePane = gamePane;
             }
 
-            public void moveRocket() {
-                // Define the car's movement logic
-                if (Math.random() < 0.01) { // 1% chance per frame to change lanes
+        private int frameCounter = 0; // Counter to control movement frequency
+        private final int moveInterval = 67; // Move every 100 frames
+
+
+        public void moveRocket() {
+                frameCounter++;
+
+                // Only move randomly after the specified interval
+                if (frameCounter >= moveInterval) {
+                    frameCounter = 0; // Reset the counter
                     moveRandom(this.lane);
                 }
-                // Move the rocket downward
+                Platform.runLater(() -> {
+                    positionY += 1;
+                    rocketNode.setY(positionY);
+                });
             }
 
             @Override
