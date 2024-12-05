@@ -5,6 +5,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Bounds;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -12,10 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class HelloApplication extends Application {
     public enum Lane {
@@ -46,16 +45,22 @@ public class HelloApplication extends Application {
 
         //create the round robin scheduler for the bot rockets
         Scheduler scheduler = new Scheduler(50);
+        rocketShip rocketShip = new rocketShip(Lane.MIDDLE_LANE, 300);
          rocket r1 = new rocket(20000, (Pane)scene.getRoot());
+         rocket r2 = new rocket(20000, (Pane)scene.getRoot());
 
          scheduler.addRocket(r1);
+
          new Thread(r1).start();
+
          scheduler.start();
 
          //function to create and start the player's rocket thread
-        loadRocket(scene, 300, 100);
+        loadRocket(rocketShip, scene);
+        ArrayList<rocket> rockets = new ArrayList<>();
+        rockets.add(r1);
 
-
+        new Thread(new backgroundThread(rocketShip,rockets)).start();
     }
 
     public static void main(String[] args) {
@@ -89,6 +94,7 @@ public class HelloApplication extends Application {
             background1.setLayoutY(background1.getLayoutY() + SCROLL_SPEED);
             background2.setLayoutY(background2.getLayoutY() + SCROLL_SPEED);
 
+
             // Reset position when an image scrolls out of view
             if (background1.getLayoutY() >= WINDOW_HEIGHT) {
                 background1.setLayoutY(background2.getLayoutY() - BACKGROUND_HEIGHT);
@@ -107,11 +113,12 @@ public class HelloApplication extends Application {
         return scene;
     }
 
-    public void loadRocket(Scene scene, int y, int speed) {
+    public void loadRocket(rocketShip rocketShip, Scene scene) {
         //get root pane to put the rocket on
         Pane pane = (Pane) scene.getRoot();
-        rocketShip rocket = new rocketShip(Lane.MIDDLE_LANE, y, speed);
+        rocketShip rocket = rocketShip;
         pane.getChildren().add(rocket.rocketNode);
+
 
         //create a thread for the rocket
         Thread t1 = new Thread(rocket);
@@ -132,7 +139,7 @@ public class HelloApplication extends Application {
         private volatile boolean running = true; // flag to control the thread
         public static Lane lane = Lane.MIDDLE_LANE;
 
-        public rocketShip(Lane lane, int startY, int speed) {
+        public rocketShip(Lane lane, int startY) {
             rocketShip.lane = lane;
             rocketNode = new ImageView(new Image("img.png"));
             rocketNode.setFitWidth(100);
@@ -141,6 +148,13 @@ public class HelloApplication extends Application {
             rocketNode.setY(startY);
             rocketNode.setVisible(true);
         }
+        public double getX(){
+            return rocketNode.getX();
+        }
+        public double getY(){
+            return rocketNode.getY();
+        }
+
 
         public void moveLeft() {
             Platform.runLater(() -> {
@@ -199,7 +213,11 @@ public class HelloApplication extends Application {
 
         public void addRocket(rocket rocket) {
             rocketQueue.add(rocket);
-
+        }
+        public void addRockets(ArrayList<rocket> rocketList) {
+            for (rocket rocket : rocketList) {
+                addRocket(rocket);
+            }
         }
 
         public void start() {
@@ -230,6 +248,16 @@ public class HelloApplication extends Application {
             private int positionY; // Car's position
             int time;
             Timer timer;
+
+            public double getX(){
+                return rocketNode.getX();
+            }
+            public double getY(){
+                return rocketNode.getY();
+            }
+            public Pane getGamePane(){
+                return gamePane;
+            }
 
             public Lane getRandomLane(){
                 Lane myLane = null;
@@ -275,6 +303,7 @@ public class HelloApplication extends Application {
                 rocketNode.setY(positionY);
 
                 this.gamePane = gamePane;
+
             }
 
         private int frameCounter = 0; // Counter to control movement frequency
@@ -294,10 +323,13 @@ public class HelloApplication extends Application {
                     rocketNode.setY(positionY);
                 });
             }
-
+        public boolean checkCollision(rocketShip k){
+            return (k.getX()==this.getX()) && (k.getY()==this.getY());
+        }
             @Override
             public void run() {
                Platform.runLater(() -> gamePane.getChildren().add(rocketNode));
+
 
                timer = new Timer();
                timer.schedule(new TimerTask() {
@@ -311,6 +343,8 @@ public class HelloApplication extends Application {
 
                while (running) {
                    try {
+                       //place to check
+
                        Thread.sleep(16);
                       moveRocket();
                }catch (InterruptedException e) {
@@ -323,4 +357,31 @@ public class HelloApplication extends Application {
                 return positionY;
             }
         }
+
+    private int playerLives = 3; // Initial lives of the player
+
+    public void checkCollision(Node playerRocket, Node botRocket) {
+        // Get the bounding boxes of the player and bot rockets
+        Bounds playerBounds = playerRocket.getBoundsInParent();
+        Bounds botBounds = botRocket.getBoundsInParent();
+
+        // Check if the bounding boxes intersect
+        if (playerBounds.intersects(botBounds)) {
+            handleCollision();
+        }
+    }
+
+    private void handleCollision() {
+        playerLives--; // Decrease the player's lives
+        System.out.println("Collision detected! Lives remaining: " + playerLives);
+
+        if (playerLives <= 0) {
+            endGame(); // Call the game-over logic
+        }
+    }
+
+    private void endGame() {
+        System.out.println("Game Over!");
+        // Add logic to stop the game or show a game-over screen
+    }
 }
