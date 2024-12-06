@@ -287,7 +287,7 @@ public class HelloApplication extends Application {
                 }
 
                 // Update the rocket's position on the screen
-                Platform.runLater(() -> rocketNode.setX(this.lane.getValue()));
+                Platform.runLater(() -> rocketNode.setX(this.lane.getValue()+15));
 
             }
 
@@ -299,7 +299,7 @@ public class HelloApplication extends Application {
                 this.rocketNode = new ImageView(new Image("img.png"));
                 rocketNode.setFitWidth(70);
                 rocketNode.setFitHeight(70);
-                rocketNode.setX(lane.getValue());
+                rocketNode.setX(lane.getValue()+15);
                 rocketNode.setY(positionY);
 
                 this.gamePane = gamePane;
@@ -309,6 +309,22 @@ public class HelloApplication extends Application {
         private int frameCounter = 0; // Counter to control movement frequency
         private final int moveInterval = 67; // Move every 100 frames
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            rocket rocket = (rocket) o;
+            return running == rocket.running && getPositionY() == rocket.getPositionY() && time == rocket.time && frameCounter == rocket.frameCounter && moveInterval == rocket.moveInterval && Objects.equals(rocketNode, rocket.rocketNode) && Objects.equals(getGamePane(), rocket.getGamePane()) && lane == rocket.lane && Objects.equals(timer, rocket.timer);
+        }
+
+        public ImageView getRocketNode(){
+            return rocketNode;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(rocketNode, running, getGamePane(), lane, getPositionY(), time, timer, frameCounter, moveInterval);
+        }
 
         public void moveRocket() {
                 frameCounter++;
@@ -324,7 +340,16 @@ public class HelloApplication extends Application {
                 });
             }
         public boolean checkCollision(rocketShip k){
-            return (k.getX()==this.getX()) && (k.getY()==this.getY());
+            double range = 100.0; // The range within which a collision is detected
+
+            // Check if the X-coordinate of `k` is within the range of `this`
+            boolean xCollision = Math.abs(k.getX() - this.getX()) <= range;
+
+            // Check if the Y-coordinate of `k` is within the range of `this`
+            boolean yCollision = Math.abs((k.getY()) - (this.getY()-33)) <= range;
+
+            // Return true if both X and Y are within the range
+            return xCollision && yCollision;
         }
             @Override
             public void run() {

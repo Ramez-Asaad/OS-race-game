@@ -20,10 +20,11 @@ public class backgroundThread implements Runnable {
             try {
                 Thread.sleep(16);
                 if(rockets.size() == 1){
-                    boolean collision = rockets.get(0).checkCollision(rocketShip);
+                    boolean collision = rockets.getFirst().checkCollision(rocketShip);
                     if(collision){
                         System.out.println(collision);
-                        rockets.get(0).getGamePane().getChildren().remove(rockets.get(0));
+                        Platform.runLater(() -> rockets.getFirst().getGamePane().getChildren().remove(rockets.getFirst().getRocketNode()));
+                        break;
                     }
                 } else if (rockets.size() > 1) {
                     for (HelloApplication.rocket rocket : rockets) {
