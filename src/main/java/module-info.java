@@ -6,6 +6,8 @@ module com.example.demo {
     requires net.synedra.validatorfx;
     requires org.kordamp.ikonli.javafx;
     requires com.almasb.fxgl.all;
+    requires java.desktop;
+    requires javafx.graphics;
 
     opens com.example.demo to javafx.fxml;
     exports com.example.demo;
