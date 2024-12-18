@@ -5,11 +5,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class rocket implements Runnable{
+    private final ArrayList<ImageView> rocketNodes = new ArrayList<>();
     private final ImageView rocketNode;
     private boolean running = true;
     private final Pane gamePane;
@@ -61,17 +63,29 @@ public class rocket implements Runnable{
     }
 
     public rocket(int time,Pane gamePane) {
+        rocketNodes.add(new ImageView("rocketlvl1.png"));
+        rocketNodes.add(new ImageView("rocketlvl2.png"));
+        rocketNodes.add(new ImageView("rocketlvl3.png"));
         this.lane = getRandomLane();
         this.positionY = -45;
         this.time = time;
 
-        this.rocketNode = new ImageView(new Image("img.png"));
+       double randomRocket = Math.random();
+       if (randomRocket < 0.3) {
+           this.rocketNode = rocketNodes.get(0);
+       }else if(randomRocket >0.3 && randomRocket< 0.7){
+           this.rocketNode = rocketNodes.get(1);
+       }else{
+           this.rocketNode = rocketNodes.get(2);
+        }
+
         rocketNode.setFitWidth(70);
         rocketNode.setFitHeight(70);
         rocketNode.setX(lane.getValue()+15);
         rocketNode.setY(positionY);
 
         this.gamePane = gamePane;
+
 
     }
 

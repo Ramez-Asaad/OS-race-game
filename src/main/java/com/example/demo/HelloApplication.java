@@ -64,7 +64,7 @@ public class HelloApplication extends Application {
         rockets.add(r1);
         rockets.add(r2);
 
-        new Thread(new collisionThread(rocketShip,rockets)).start();
+        new Thread(new rocketsCollisionThread(rocketShip,rockets)).start();
     }
 
     public static void main(String[] args) {

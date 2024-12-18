@@ -13,7 +13,7 @@ public class rocketShip implements Runnable {
 
     public rocketShip(HelloApplication.Lane lane, int startY) {
         rocketShip.lane = lane;
-        rocketNode = new ImageView(new Image("img.png"));
+        rocketNode = new ImageView(new Image("rocketship.png"));
         rocketNode.setFitWidth(100);
         rocketNode.setFitHeight(100);
         rocketNode.setX(lane.getValue());

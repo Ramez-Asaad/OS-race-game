@@ -5,14 +5,14 @@ import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
 
-public class collisionThread implements Runnable {
+public class rocketsCollisionThread implements Runnable {
     Pane gamePane;
     rocketShip rocketShip;
     ArrayList<rocket> rockets;
     private volatile boolean running = true;
     scoreRectangle score = new scoreRectangle(20,20,100,20);
 
-    collisionThread(rocketShip rocketShip, ArrayList<rocket> rockets) {
+    rocketsCollisionThread(rocketShip rocketShip, ArrayList<rocket> rockets) {
         this.rocketShip = rocketShip;
         this.rockets = rockets;
         gamePane = rockets.getFirst().getGamePane();
@@ -32,6 +32,9 @@ public class collisionThread implements Runnable {
                                 rockets.get(finalI).getGamePane().getChildren().remove(rockets.get(finalI).getRocketNode());
                                 rockets.remove(finalI);
                                 score.incrementScore(50);
+                                if(score.getHearts().size()>1) score.reduceHeart();
+                                else System.out.println("game over");
+
 
                             });
 
