@@ -1,7 +1,6 @@
 package com.example.demo;
 
 import javafx.application.Platform;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
@@ -11,7 +10,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class rocket implements Runnable{
-    private final ArrayList<ImageView> rocketNodes = new ArrayList<>();
     private final ImageView rocketNode;
     private boolean running = true;
     private final Pane gamePane;
@@ -31,7 +29,7 @@ public class rocket implements Runnable{
     }
 
     public static HelloApplication.Lane getRandomLane(){
-        HelloApplication.Lane myLane = null;
+        HelloApplication.Lane myLane;
         int x = (int)(Math.random() * 300);
         if (x > 50 && x < 150) {
             myLane = HelloApplication.Lane.RIGHT_LANE;
@@ -42,27 +40,28 @@ public class rocket implements Runnable{
         } else myLane = getRandomLane();
         return myLane;
     }
-    public void moveRandom(HelloApplication.Lane l){
-        int direction = Math.random() < 0.5 ? 1 : -1; // Decide direction (left or right)
-
-        switch (l) {
-            case RIGHT_LANE:
-                this.lane = HelloApplication.Lane.MIDDLE_LANE;
-                break;
-            case MIDDLE_LANE:
-                this.lane = direction == 1 ? HelloApplication.Lane.LEFT_LANE : HelloApplication.Lane.RIGHT_LANE;
-                break;
-            case LEFT_LANE:
-                this.lane = HelloApplication.Lane.MIDDLE_LANE;
-                break;
-        }
-
-        // Update the rocket's position on the screen
-        Platform.runLater(() -> rocketNode.setX(this.lane.getValue()+15));
-
-    }
+//    public void moveRandom(HelloApplication.Lane l){
+//        int direction = Math.random() < 0.5 ? 1 : -1; // Decide direction (left or right)
+//
+//        switch (l) {
+//            case RIGHT_LANE:
+//                this.lane = HelloApplication.Lane.MIDDLE_LANE;
+//                break;
+//            case MIDDLE_LANE:
+//                this.lane = direction == 1 ? HelloApplication.Lane.LEFT_LANE : HelloApplication.Lane.RIGHT_LANE;
+//                break;
+//            case LEFT_LANE:
+//                this.lane = HelloApplication.Lane.MIDDLE_LANE;
+//                break;
+//        }
+//
+//        // Update the rocket's position on the screen
+//        Platform.runLater(() -> rocketNode.setX(this.lane.getValue()+15));
+//
+//    }
 
     public rocket(int time,Pane gamePane) {
+        ArrayList<ImageView> rocketNodes = new ArrayList<>();
         rocketNodes.add(new ImageView("rocketlvl1.png"));
         rocketNodes.add(new ImageView("rocketlvl2.png"));
         rocketNodes.add(new ImageView("rocketlvl3.png"));
@@ -72,7 +71,7 @@ public class rocket implements Runnable{
 
        double randomRocket = Math.random();
        if (randomRocket < 0.3) {
-           this.rocketNode = rocketNodes.get(0);
+           this.rocketNode = rocketNodes.getFirst();
        }else if(randomRocket >0.3 && randomRocket< 0.7){
            this.rocketNode = rocketNodes.get(1);
        }else{
@@ -89,15 +88,14 @@ public class rocket implements Runnable{
 
     }
 
-    private int frameCounter = 0; // Counter to control movement frequency
-    private final int moveInterval = 67; // Move every 100 frames
+    private final int frameCounter = 0; // Counter to control movement frequency
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         rocket rocket = (rocket) o;
-        return running == rocket.running && getPositionY() == rocket.getPositionY() && time == rocket.time && frameCounter == rocket.frameCounter && moveInterval == rocket.moveInterval && Objects.equals(rocketNode, rocket.rocketNode) && Objects.equals(getGamePane(), rocket.getGamePane()) && lane == rocket.lane && Objects.equals(timer, rocket.timer);
+        return running == rocket.running && getPositionY() == rocket.getPositionY() && time == rocket.time && frameCounter == rocket.frameCounter && Objects.equals(rocketNode, rocket.rocketNode) && Objects.equals(getGamePane(), rocket.getGamePane()) && lane == rocket.lane && Objects.equals(timer, rocket.timer);
     }
 
     public ImageView getRocketNode(){
@@ -106,6 +104,8 @@ public class rocket implements Runnable{
 
     @Override
     public int hashCode() {
+        // Move every 100 frames
+        int moveInterval = 67;
         return Objects.hash(rocketNode, running, getGamePane(), lane, getPositionY(), time, timer, frameCounter, moveInterval);
     }
 
@@ -129,10 +129,7 @@ public class rocket implements Runnable{
     }
     public boolean checkOutOfBound(){
         double y = this.getY();
-        if(y>gamePane.getHeight() || y< -50){
-            return true;
-        }
-        else return false;
+        return y > gamePane.getHeight() || y < -50;
     }
     @Override
     public void run() {
@@ -143,9 +140,7 @@ public class rocket implements Runnable{
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> {
-                    gamePane.getChildren().remove(rocketNode);
-                });
+                Platform.runLater(() -> gamePane.getChildren().remove(rocketNode));
                 running = false;
                 timer.cancel();
             }

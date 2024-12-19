@@ -4,16 +4,13 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.geometry.Bounds;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -38,7 +35,6 @@ public class HelloApplication extends Application {
     private static final int BACKGROUND_WIDTH = 400;
     private static final int BACKGROUND_HEIGHT = 1000;
     private static final int SCROLL_SPEED = 2; // Speed of scrolling in pixels per frame
-    private int playerLives = 3; // Initial lives of the player
     Scheduler scheduler = new Scheduler(50);
     rocketShip rocketShip = new rocketShip(Lane.MIDDLE_LANE, 300);
     static ArrayList<rocket> rockets = new ArrayList<>();
@@ -49,7 +45,7 @@ public class HelloApplication extends Application {
         Pane scene = loadBg(primaryStage);
 
 
-        //create the round robin scheduler for the bot rockets
+        //create the round-robin scheduler for the bot rockets
          rocket r1 = new rocket(20000, scene);
          rocket r2 = new rocket(20000, scene);
 
@@ -93,7 +89,21 @@ public class HelloApplication extends Application {
         root.getChildren().addAll(background1, background2);
 
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(16), event -> {
+        Timeline timeline = getTimeline(background1, background2);
+        timeline.play();
+
+        Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
+        scoreRectangle score = new scoreRectangle(20,20,100,20);
+        root.getChildren().add(score);// flag to control the thread
+
+        primaryStage.setTitle("Space Racing Game");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        return root;
+    }
+
+    private static @NotNull Timeline getTimeline(ImageView background1, ImageView background2) {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(16), _ -> {
             // Move both images down
             background1.setLayoutY(background1.getLayoutY() + SCROLL_SPEED);
             background2.setLayoutY(background2.getLayoutY() + SCROLL_SPEED);
@@ -108,16 +118,7 @@ public class HelloApplication extends Application {
             }
         }));
         timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.play();
-
-        Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-        scoreRectangle score = new scoreRectangle(20,20,100,20);
-        root.getChildren().add(score);// flag to control the thread
-
-        primaryStage.setTitle("Space Racing Game");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-        return root;
+        return timeline;
     }
 
     public void loadRocket(rocketShip rocketShip, Scene scene) {
@@ -135,35 +136,8 @@ public class HelloApplication extends Application {
             switch (event.getCode()) {
                 case LEFT -> rocketShip.moveLeft();
                 case RIGHT -> rocketShip.moveRight();
-                case ESCAPE -> {
-                    System.exit(0);
-                }
+                case ESCAPE -> System.exit(0);
             }
         });
-    }
-
-    public void checkCollision(Node playerRocket, Node botRocket) {
-        // Get the bounding boxes of the player and bot rockets
-        Bounds playerBounds = playerRocket.getBoundsInParent();
-        Bounds botBounds = botRocket.getBoundsInParent();
-
-        // Check if the bounding boxes intersect
-        if (playerBounds.intersects(botBounds)) {
-            handleCollision();
-        }
-    }
-
-    private void handleCollision() {
-        playerLives--; // Decrease the player's lives
-        System.out.println("Collision detected! Lives remaining: " + playerLives);
-
-        if (playerLives <= 0) {
-            endGame(); // Call the game-over logic
-        }
-    }
-
-    private void endGame() {
-        System.out.println("Game Over!");
-        // Add logic to stop the game or show a game-over screen
     }
 }

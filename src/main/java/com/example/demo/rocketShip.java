@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import com.example.demo.HelloApplication;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -67,9 +66,5 @@ public class rocketShip implements Runnable {
             }
 
         }
-    }
-
-    public void stop() {
-        running = false;
     }
 }

@@ -4,6 +4,8 @@ import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
+import static java.lang.Thread.*;
+
 
 public class powerUp implements Runnable {
 
@@ -35,9 +37,9 @@ public class powerUp implements Runnable {
         this.powerUpNode = new ImageView(name);
     }
 
-    public HelloApplication.Lane getLane() {
-        return lane;
-    }
+//    public HelloApplication.Lane getLane() {
+//        return lane;
+//    }
 
     public powerUp(ImageView powerUpNode, Pane gamePane) {
         final HelloApplication.Lane[] newlane = {rocket.getRandomLane()};
@@ -48,7 +50,7 @@ public class powerUp implements Runnable {
         lane = newlane[0];
         this.powerUpNode = powerUpNode;
         this.gamePane = gamePane;
-        this.positionY = -45;
+        this.positionY = -55;
         powerUpNode.setFitWidth(50);
         powerUpNode.setFitHeight(50);
         powerUpNode.setX(lane.getValue()+35);
@@ -79,10 +81,7 @@ public class powerUp implements Runnable {
     }
     public boolean checkOutOfBound(){
         double y = this.getY();
-        if(y>gamePane.getHeight() || y< -50){
-            return true;
-        }
-        else return false;
+        return y > gamePane.getHeight() || y < -60;
     }
     @Override
     public void run() {
@@ -90,10 +89,10 @@ public class powerUp implements Runnable {
 
         while(true){
             try{
-                Thread.sleep(16);
+                sleep(16);
                 movePowerUP();
             }catch(InterruptedException e){
-                Thread.currentThread().interrupt();
+                currentThread().interrupt();
             }
         }
 
@@ -102,20 +101,17 @@ public class powerUp implements Runnable {
 
         Platform.runLater(()->{
             setLane(rocket.getRandomLane());
-            setPositionY(-30);
+            setPositionY(-55);
             gamePane.getChildren().remove(this.powerUpNode);
             if(powerUpNode.getImage().getUrl().contains("star")) {
                 setNode("x-powerup.png");
-                powerUpNode.setX(getPositionX());
-                powerUpNode.setFitWidth(50);
-                powerUpNode.setFitHeight(50);
             }
             else {
                 setNode("star.png");
-                powerUpNode.setX(getPositionX());
-                powerUpNode.setFitWidth(50);
-                powerUpNode.setFitHeight(50);
             }
+            powerUpNode.setX(getPositionX());
+            powerUpNode.setFitWidth(50);
+            powerUpNode.setFitHeight(50);
             gamePane.getChildren().add(this.powerUpNode);
         });
 
