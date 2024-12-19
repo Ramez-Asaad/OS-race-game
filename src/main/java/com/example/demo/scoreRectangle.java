@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -15,10 +16,10 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class scoreRectangle extends AnchorPane {
-    int score = 0;
-    Label scoreLabel = new Label("Score: " + score);
-    ImageView heart = new ImageView("heart.png");
-    ArrayList<ImageView> hearts = new ArrayList<>();
+    static int score = 0;
+    static Label scoreLabel = new Label("Score: " + score);
+    static ImageView heart = new ImageView("heart.png");
+    static ArrayList<ImageView> hearts = new ArrayList<>();
 
     public scoreRectangle(int x, int y, int width, int height) {
         scoreLabel.setStyle("-fx-font-family: 'hooge 05_55';" +
@@ -55,26 +56,23 @@ public class scoreRectangle extends AnchorPane {
 
     }
 
-    synchronized public void incrementScore(int amount) {
+    static synchronized public void incrementScore(int amount) {
         score += amount;
         scoreLabel.setText("Score: " + score);
-
     }
 
     public int getScore() {
         return score;
     }
 
-    public ArrayList<ImageView> getHearts() {
+    public static ArrayList<ImageView> getHearts() {
         return hearts;
     }
 
-    public void reduceHeart() {
+    synchronized public static void reduceHeart() {
         if(hearts.size()>1) {
-            hearts.removeLast();
-            Platform.runLater(()->{
-                this.getChildren().removeLast();
-            });
+            Platform.runLater(()->{hearts.removeLast();});
+
         }
 
         else return;
@@ -87,5 +85,14 @@ public class scoreRectangle extends AnchorPane {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    public void updateScore(){
+        scoreLabel.setText("Score: " + score);
+    }
+
+    @Override
+    public String toString() {
+        return "scoreRectangle{} " + super.toString();
     }
 }

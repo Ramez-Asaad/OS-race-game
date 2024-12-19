@@ -4,6 +4,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -37,18 +38,19 @@ public class HelloApplication extends Application {
     private static final int BACKGROUND_HEIGHT = 1000;
     private static final int SCROLL_SPEED = 2; // Speed of scrolling in pixels per frame
     private int playerLives = 3; // Initial lives of the player
-
+    Scheduler scheduler = new Scheduler(50);
+    rocketShip rocketShip = new rocketShip(Lane.MIDDLE_LANE, 300);
+    static ArrayList<rocket> rockets = new ArrayList<>();
 
     @Override
     public void start(Stage primaryStage) {
         //start the background scroll animation and set stage
-        Scene scene = loadBg(primaryStage);
+        Pane scene = loadBg(primaryStage);
+
 
         //create the round robin scheduler for the bot rockets
-        Scheduler scheduler = new Scheduler(50);
-        rocketShip rocketShip = new rocketShip(Lane.MIDDLE_LANE, 300);
-         rocket r1 = new rocket(20000, (Pane)scene.getRoot());
-         rocket r2 = new rocket(20000, (Pane)scene.getRoot());
+         rocket r1 = new rocket(20000, scene);
+         rocket r2 = new rocket(20000, scene);
 
          scheduler.addRocket(r1);
          scheduler.addRocket(r2);
@@ -59,22 +61,20 @@ public class HelloApplication extends Application {
          scheduler.start();
 
          //function to create and start the player's rocket thread
-        loadRocket(rocketShip, scene);
-        ArrayList<rocket> rockets = new ArrayList<>();
+        loadRocket(rocketShip, scene.getScene());
         rockets.add(r1);
         rockets.add(r2);
 
         new Thread(new rocketsCollisionThread(rocketShip,rockets)).start();
+        new Thread(new powerUpsCollisionThread(rocketShip,scene)).start();
     }
 
     public static void main(String[] args) {
         launch();
     }
 
-    public Scene loadBg(Stage primaryStage) {
+    public Pane loadBg(Stage primaryStage) {
         Pane root = new Pane();
-
-        // Load background image
         Image backgroundImage = new Image("demo-bg.png"); // Replace with your image path
 
         // Create two ImageView instances for scrolling
@@ -89,10 +89,9 @@ public class HelloApplication extends Application {
         background2.setFitHeight(BACKGROUND_HEIGHT);
         background2.setLayoutY(-BACKGROUND_HEIGHT);
 
-        // Add images to the pane
         root.getChildren().addAll(background1, background2);
 
-        // Create the scrolling animation
+
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(16), event -> {
             // Move both images down
             background1.setLayoutY(background1.getLayoutY() + SCROLL_SPEED);
@@ -111,28 +110,30 @@ public class HelloApplication extends Application {
         timeline.play();
 
         Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
+        scoreRectangle score = new scoreRectangle(20,20,100,20);
+        root.getChildren().add(score);// flag to control the thread
+
         primaryStage.setTitle("Space Racing Game");
         primaryStage.setScene(scene);
         primaryStage.show();
-        return scene;
+        return root;
     }
 
     public void loadRocket(rocketShip rocketShip, Scene scene) {
         //get root pane to put the rocket on
         Pane pane = (Pane) scene.getRoot();
-        rocketShip rocket = rocketShip;
-        pane.getChildren().add(rocket.getNode());
+        pane.getChildren().add(rocketShip.getNode());
 
 
         //create a thread for the rocket
-        Thread t1 = new Thread(rocket);
+        Thread t1 = new Thread(rocketShip);
         t1.start();
 
         //set what happens when the payer clicks on left and right arrows
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
-                case LEFT -> rocket.moveLeft();
-                case RIGHT -> rocket.moveRight();
+                case LEFT -> rocketShip.moveLeft();
+                case RIGHT -> rocketShip.moveRight();
             }
         });
     }

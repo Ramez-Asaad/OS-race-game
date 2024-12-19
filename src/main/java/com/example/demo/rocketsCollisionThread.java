@@ -5,19 +5,19 @@ import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
 
+import static com.example.demo.scoreRectangle.score;
+
 public class rocketsCollisionThread implements Runnable {
     Pane gamePane;
     rocketShip rocketShip;
     ArrayList<rocket> rockets;
     private volatile boolean running = true;
-    scoreRectangle score = new scoreRectangle(20,20,100,20);
 
     rocketsCollisionThread(rocketShip rocketShip, ArrayList<rocket> rockets) {
         this.rocketShip = rocketShip;
         this.rockets = rockets;
         gamePane = rockets.getFirst().getGamePane();
-        gamePane.getChildren().add(score);// flag to control the thread
-    }
+            }
 
     public void run() {
         while (running) {
@@ -29,11 +29,24 @@ public class rocketsCollisionThread implements Runnable {
                         if (collision) {
                             int finalI = i;
                             Platform.runLater(() -> {
-                                rockets.get(finalI).getGamePane().getChildren().remove(rockets.get(finalI).getRocketNode());
-                                rockets.remove(finalI);
-                                score.incrementScore(50);
-                                if(score.getHearts().size()>1) score.reduceHeart();
-                                else System.out.println("game over");
+                                try {
+                                    rockets.get(finalI).getGamePane().getChildren().remove(rockets.get(finalI).getRocketNode());
+                                    rockets.remove(finalI);
+                                }catch(IndexOutOfBoundsException e){
+
+                                }
+
+                                scoreRectangle.incrementScore(-50);
+                                if(scoreRectangle.getHearts().size()>1) {
+                                    scoreRectangle r = (scoreRectangle) gamePane.getChildren().get(2);
+                                    if(r.getChildren().size()>1) r.getChildren().removeLast();
+
+                                }
+                                else {
+                                    running = false;
+                                    System.out.println("game over");
+                                    return;
+                                }
 
 
                             });

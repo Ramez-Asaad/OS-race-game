@@ -30,7 +30,7 @@ public class rocket implements Runnable{
         return gamePane;
     }
 
-    public HelloApplication.Lane getRandomLane(){
+    public static HelloApplication.Lane getRandomLane(){
         HelloApplication.Lane myLane = null;
         int x = (int)(Math.random() * 300);
         if (x > 50 && x < 150) {
@@ -111,7 +111,7 @@ public class rocket implements Runnable{
 
     public void moveRocket() {
         Platform.runLater(() -> {
-            positionY += 1;
+            positionY += 5;
             rocketNode.setY(positionY);
         });
     }
