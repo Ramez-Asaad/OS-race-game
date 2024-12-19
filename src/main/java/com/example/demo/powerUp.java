@@ -4,27 +4,18 @@ import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class powerUp implements Runnable {
 
 
     private ImageView powerUpNode;
-    private boolean running = true;
     private final Pane gamePane;
     private HelloApplication.Lane lane;
     private int positionY;
     private int positionX;
-    int time;
-    Timer timer;
+
     public double getX(){ return powerUpNode.getX(); }
     public double getY(){ return powerUpNode.getY(); }
-    public Pane getGamePane(){ return gamePane; }
-    public void stopRunning(){ running = false; }
-    public boolean isRunning() {
-        return running;
-    }
 
     public void setLane(HelloApplication.Lane lane) {
         setPositionX(lane.getValue() + 30);
@@ -48,17 +39,16 @@ public class powerUp implements Runnable {
         return lane;
     }
 
-    public powerUp(int time, ImageView powerUpNode, Pane gamePane) {
+    public powerUp(ImageView powerUpNode, Pane gamePane) {
         final HelloApplication.Lane[] newlane = {rocket.getRandomLane()};
         for (rocket rocket : HelloApplication.rockets) {
-            if(rocket.getX() == newlane[0].getValue()) newlane[0] = rocket.getRandomLane();
+            if(rocket.getX() == newlane[0].getValue()) newlane[0] = com.example.demo.rocket.getRandomLane();
             else break;
         }
         lane = newlane[0];
         this.powerUpNode = powerUpNode;
         this.gamePane = gamePane;
         this.positionY = -45;
-        this.time = time;
         powerUpNode.setFitWidth(50);
         powerUpNode.setFitHeight(50);
         powerUpNode.setX(lane.getValue()+35);
@@ -98,18 +88,7 @@ public class powerUp implements Runnable {
     public void run() {
         Platform.runLater(() -> gamePane.getChildren().add(powerUpNode));
 
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> gamePane.getChildren().remove(powerUpNode));
-                running = false;
-                timer.cancel();
-
-            }
-        }, time);
-
-        while(running){
+        while(true){
             try{
                 Thread.sleep(16);
                 movePowerUP();

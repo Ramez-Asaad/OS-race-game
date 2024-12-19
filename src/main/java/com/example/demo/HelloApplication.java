@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -134,6 +135,9 @@ public class HelloApplication extends Application {
             switch (event.getCode()) {
                 case LEFT -> rocketShip.moveLeft();
                 case RIGHT -> rocketShip.moveRight();
+                case ESCAPE -> {
+                    System.exit(0);
+                }
             }
         });
     }

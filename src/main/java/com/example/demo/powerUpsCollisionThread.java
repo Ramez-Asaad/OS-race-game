@@ -19,8 +19,8 @@ public class powerUpsCollisionThread implements Runnable {
     public powerUpsCollisionThread(rocketShip rocketShip, Pane gamePane) {
         this.rocketShip = rocketShip;
         this.gamePane = gamePane;
-        xPowerUpPower = new powerUp(20000,new ImageView(this.xPowerUp), gamePane );
-        starPower = new powerUp(200000000,new ImageView(this.star),gamePane);
+        xPowerUpPower = new powerUp(new ImageView(this.xPowerUp), gamePane );
+        starPower = new powerUp(new ImageView(this.star),gamePane);
         currentPowerUp = starPower;
     }
 
