@@ -41,6 +41,7 @@ public class powerUpsCollisionThread implements Runnable {
                             currentPowerUp.powerUpChange();
                         });
                     }
+                    if(!rocketShip.isRunning()) running = false;
 
 
                 } catch (InterruptedException e) {
@@ -48,6 +49,9 @@ public class powerUpsCollisionThread implements Runnable {
                 }
 
         }
+    }
 
+    public Pane getGamePane() {
+        return gamePane;
     }
 }

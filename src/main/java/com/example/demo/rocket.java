@@ -11,12 +11,11 @@ import java.util.TimerTask;
 
 public class rocket implements Runnable{
     private final ImageView rocketNode;
-    private boolean running = true;
+    private volatile boolean running = true;
     private final Pane gamePane;
     private HelloApplication.Lane lane;
     private int positionY; // Car's position
-    int time;
-    Timer timer;
+    int speed;
 
     public double getX(){
         return rocketNode.getX();
@@ -66,8 +65,9 @@ public class rocket implements Runnable{
         rocketNodes.add(new ImageView("rocketlvl2.png"));
         rocketNodes.add(new ImageView("rocketlvl3.png"));
         this.lane = getRandomLane();
-        this.positionY = -45;
-        this.time = time;
+        this.positionY = -30;
+        double randomSpeed = Math.random();
+        this.speed = randomSpeed*20 > 3 && randomSpeed*20 < 10 ? (int) (randomSpeed*20) : 3; ;
 
        double randomRocket = Math.random();
        if (randomRocket < 0.3) {
@@ -77,7 +77,7 @@ public class rocket implements Runnable{
        }else{
            this.rocketNode = rocketNodes.get(2);
         }
-
+        rocketNode.setRotate(180);
         rocketNode.setFitWidth(70);
         rocketNode.setFitHeight(70);
         rocketNode.setX(lane.getValue()+15);
@@ -95,7 +95,7 @@ public class rocket implements Runnable{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         rocket rocket = (rocket) o;
-        return running == rocket.running && getPositionY() == rocket.getPositionY() && time == rocket.time && frameCounter == rocket.frameCounter && Objects.equals(rocketNode, rocket.rocketNode) && Objects.equals(getGamePane(), rocket.getGamePane()) && lane == rocket.lane && Objects.equals(timer, rocket.timer);
+        return running == rocket.running && getPositionY() == rocket.getPositionY() && frameCounter == rocket.frameCounter && Objects.equals(rocketNode, rocket.rocketNode) && Objects.equals(getGamePane(), rocket.getGamePane()) && lane == rocket.lane ;
     }
 
     public ImageView getRocketNode(){
@@ -106,12 +106,12 @@ public class rocket implements Runnable{
     public int hashCode() {
         // Move every 100 frames
         int moveInterval = 67;
-        return Objects.hash(rocketNode, running, getGamePane(), lane, getPositionY(), time, timer, frameCounter, moveInterval);
+        return Objects.hash(rocketNode, running, getGamePane(), lane, getPositionY(), frameCounter, moveInterval);
     }
 
     public void moveRocket() {
         Platform.runLater(() -> {
-            positionY += 5;
+            positionY += speed;
             rocketNode.setY(positionY);
         });
     }
@@ -129,23 +129,11 @@ public class rocket implements Runnable{
     }
     public boolean checkOutOfBound(){
         double y = this.getY();
-        return y > gamePane.getHeight() || y < -50;
+        return y > gamePane.getHeight()+50 || y < -50;
     }
     @Override
     public void run() {
         Platform.runLater(() -> gamePane.getChildren().add(rocketNode));
-
-
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> gamePane.getChildren().remove(rocketNode));
-                running = false;
-                timer.cancel();
-            }
-        },time);
-
         while (running) {
             try {
                 //place to check
@@ -160,5 +148,8 @@ public class rocket implements Runnable{
 
     public int getPositionY() {
         return positionY;
+    }
+    public void stopThread(){
+        this.running = false;
     }
 }

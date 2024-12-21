@@ -5,6 +5,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class rocketShip implements Runnable {
+    public static int speed = 2;
 
     private final ImageView rocketNode;
     private volatile boolean running = true; // flag to control the thread
@@ -24,6 +25,9 @@ public class rocketShip implements Runnable {
     }
     public double getY(){
         return rocketNode.getY();
+    }
+    public boolean isRunning() {
+        return running;
     }
 
 
@@ -66,5 +70,19 @@ public class rocketShip implements Runnable {
             }
 
         }
+
+    }
+    public void stop(){
+        running = false;
+    }
+
+    public void updateRocketSpeed(String currentWeather) {
+        switch (currentWeather) {
+            case "Sun"->speed = 2;
+            case "Meteors"->speed = 1;
+            case "Supernova"->speed = 0;
+            case "Solar Wind"->speed = 4;
+        }
+
     }
 }

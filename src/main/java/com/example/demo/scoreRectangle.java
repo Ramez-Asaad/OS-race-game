@@ -20,6 +20,7 @@ public class scoreRectangle extends AnchorPane {
     static Label scoreLabel = new Label("Score: " + score);
     static ImageView heart = new ImageView("heart.png");
     static ArrayList<ImageView> hearts = new ArrayList<>();
+    static Label weatherLabel = new Label("Weather: " + score);
 
     public scoreRectangle(int x, int y, int width, int height) {
         scoreLabel.setStyle("-fx-font-family: 'hooge 05_55';" +
@@ -51,13 +52,19 @@ public class scoreRectangle extends AnchorPane {
         hearts.add(heart2);
         hearts.add(heart3);
         this.getChildren().add(scoreLabel);
+        this.getChildren().add(weatherLabel);
 
         for(ImageView heart:hearts) this.getChildren().add(heart);
 
     }
 
+    static void resetScore(){
+        score = 0;
+        scoreLabel.setText("Score: " + score);
+    }
+
     static synchronized public void incrementScore(int amount) {
-        score += amount;
+        score = score + amount > 0 ? score + amount : score;
         scoreLabel.setText("Score: " + score);
     }
 
@@ -72,10 +79,9 @@ public class scoreRectangle extends AnchorPane {
     synchronized public static void reduceHeart() {
         if(hearts.size()>1) {
             Platform.runLater(()->{hearts.removeLast();});
-
         }
 
-        else return;
+        else return ;
 
     }
 

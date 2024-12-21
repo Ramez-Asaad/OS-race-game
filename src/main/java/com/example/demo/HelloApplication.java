@@ -4,7 +4,9 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -12,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.*;
 
 public class HelloApplication extends Application {
@@ -30,49 +33,38 @@ public class HelloApplication extends Application {
             return value;
         }
     }
+    private static Stage primaryStage;
     private static final int WINDOW_WIDTH = 400;
     private static final int WINDOW_HEIGHT = 400;
     private static final int BACKGROUND_WIDTH = 400;
     private static final int BACKGROUND_HEIGHT = 1000;
-    private static final int SCROLL_SPEED = 2; // Speed of scrolling in pixels per frame
-    Scheduler scheduler = new Scheduler(50);
-    rocketShip rocketShip = new rocketShip(Lane.MIDDLE_LANE, 300);
+
+    static Scheduler scheduler = new Scheduler(50);
+    static rocketShip rocketShip = new rocketShip(Lane.MIDDLE_LANE, 280);
     static ArrayList<rocket> rockets = new ArrayList<>();
 
     @Override
-    public void start(Stage primaryStage) {
-        //start the background scroll animation and set stage
-        Pane scene = loadBg(primaryStage);
+    public void start(Stage primaryStage) throws IOException {
+        HelloApplication.primaryStage = primaryStage;
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("HomePage.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 400, 400);
+        primaryStage.setTitle("Space Game");
+        primaryStage.setScene(scene);
+        primaryStage.show();
 
 
-        //create the round-robin scheduler for the bot rockets
-         rocket r1 = new rocket(20000, scene);
-         rocket r2 = new rocket(20000, scene);
 
-         scheduler.addRocket(r1);
-         scheduler.addRocket(r2);
 
-         new Thread(r1).start();
-         new Thread(r2).start();
-
-         scheduler.start();
-
-         //function to create and start the player's rocket thread
-        loadRocket(rocketShip, scene.getScene());
-        rockets.add(r1);
-        rockets.add(r2);
-
-        new Thread(new rocketsCollisionThread(rocketShip,rockets)).start();
-        new Thread(new powerUpsCollisionThread(rocketShip,scene)).start();
     }
+
 
     public static void main(String[] args) {
         launch();
     }
 
-    public Pane loadBg(Stage primaryStage) {
+    public static Pane loadBg(Stage primaryStage) {
         Pane root = new Pane();
-        Image backgroundImage = new Image("demo-bg.png"); // Replace with your image path
+        Image backgroundImage = new Image("03d76512-ee4f-473e-a8d7-e85eec101786.jpg"); // Replace with your image path
 
         // Create two ImageView instances for scrolling
         ImageView background1 = new ImageView(backgroundImage);
@@ -94,7 +86,7 @@ public class HelloApplication extends Application {
 
         Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
         scoreRectangle score = new scoreRectangle(20,20,100,20);
-        root.getChildren().add(score);// flag to control the thread
+        root.getChildren().add(score);
 
         primaryStage.setTitle("Space Racing Game");
         primaryStage.setScene(scene);
@@ -105,8 +97,8 @@ public class HelloApplication extends Application {
     private static @NotNull Timeline getTimeline(ImageView background1, ImageView background2) {
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(16), _ -> {
             // Move both images down
-            background1.setLayoutY(background1.getLayoutY() + SCROLL_SPEED);
-            background2.setLayoutY(background2.getLayoutY() + SCROLL_SPEED);
+            background1.setLayoutY(background1.getLayoutY() + com.example.demo.rocketShip.speed);
+            background2.setLayoutY(background2.getLayoutY() + com.example.demo.rocketShip.speed);
 
 
             // Reset position when an image scrolls out of view
@@ -121,7 +113,34 @@ public class HelloApplication extends Application {
         return timeline;
     }
 
-    public void loadRocket(rocketShip rocketShip, Scene scene) {
+    public static void startGame(){
+        primaryStage.close();
+        Pane scene = loadBg(primaryStage);
+
+
+        //create the round-robin scheduler for the bot rockets
+        rocket r1 = new rocket(200000, scene);
+        rocket r2 = new rocket(200000, scene);
+
+        scheduler.addRocket(r1);
+        scheduler.addRocket(r2);
+
+        new Thread(r1).start();
+        new Thread(r2).start();
+
+        scheduler.start();
+
+        //function to create and start the player's rocket thread
+        loadRocket(rocketShip, scene.getScene());
+        rockets.add(r1);
+        rockets.add(r2);
+
+        new Thread(new rocketsCollisionThread(rocketShip,rockets)).start();
+        new Thread(new powerUpsCollisionThread(rocketShip,scene)).start();
+        new Thread(new WeatherLogicThread(new Label(),rocketShip,scene)).start();
+    }
+
+    public static void loadRocket(rocketShip rocketShip, Scene scene) {
         //get root pane to put the rocket on
         Pane pane = (Pane) scene.getRoot();
         pane.getChildren().add(rocketShip.getNode());
