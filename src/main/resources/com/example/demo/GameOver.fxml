@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="mainPane" prefHeight="400.0" prefWidth="400.0" styleClass="anchor-pane" stylesheets="@../../../Style.css"
+            xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.demo.GameOver">
+   <Label layoutX="75.0" layoutY="111.0" prefHeight="80.0" prefWidth="258.0" styleClass="label-GameOver"
+          stylesheets="@../../../desgin.css" text="GAME OVER">
+      <font>
+         <Font name="System Bold" size="29.0"/>
+      </font>
+   </Label>
+   <Button fx:id="playAgainBtn" layoutX="109.0" layoutY="191.0" mnemonicParsing="false" styleClass="button-Quit"
+           stylesheets="@../../../Style.css" text="Play Again?"/>
+   <Button fx:id="quitBtn" layoutX="151.0" layoutY="251.0" mnemonicParsing="false" styleClass="button-Quit"
+           stylesheets="@../../../desgin.css" text="Quit"/>
+</AnchorPane>

@@ -1,0 +1,15 @@
+.anchor-pane {
+    -fx-background-image: url("Space.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-position: center;
+}
+.label-GameOver {
+    -fx-font-family:'hooge 05_55';
+    -fx-font-size: 44px;
+    -fx-text-fill: #ffcc00;
+    -fx-font-weight: 800;
+    -fx-effect: dropshadow(gaussian, #000000, 5, 0.5, 2, 2);
+    fx-border-color: #ffffff;
+}
+

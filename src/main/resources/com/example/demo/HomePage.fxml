@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="400.0" prefWidth="400.0" styleClass="anchor-pane" stylesheets="@../../../Style.css"
+            xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.demo.HomePage">
+   <Label layoutX="78.0" layoutY="93.0" styleClass="Label-HomePage" stylesheets="@../../../Style.css" text="The Space Race">
+      <font>
+         <Font size="25.0"/>
+      </font>
+   </Label>
+   <Hyperlink fx:id="HyperLinkAction" layoutX="159.0" layoutY="364.0" onAction="#HyperLinkAction" prefHeight="19.0"
+              prefWidth="107.0" stylesheets="@../../../Style.css" text="SourceCode"/>
+   <Button fx:id="PlayButton" layoutX="115.0" layoutY="153.0" mnemonicParsing="false" prefHeight="54.0"
+           prefWidth="180.0" styleClass="button-Quit" stylesheets="@../../../Style.css" text="Play"/>
+   <Button fx:id="SettingsButton" layoutX="114.0" layoutY="223.0" mnemonicParsing="false" prefHeight="54.0"
+           prefWidth="180.0" styleClass="button-Quit" stylesheets="@../../../Style.css" text="Settings"/>
+   <Button fx:id="QuitButton" layoutX="114.0" layoutY="294.0" mnemonicParsing="false" prefHeight="54.0"
+           prefWidth="180.0" styleClass="button-Quit" stylesheets="@../../../Style.css" text="Quit"/>
+   <Label layoutX="161.0" layoutY="81.0" text="Welcome To " textFill="#b1b10c">
+      <font>
+         <Font name="System Bold" size="13.0"/>
+      </font>
+      <effect>
+         <Lighting bumpInput="$null" diffuseConstant="1.44" specularConstant="0.56" specularExponent="24.04"
+                   surfaceScale="1.41">
+            <light>
+               <Light.Distant/>
+            </light>
+         </Lighting>
+      </effect>
+   </Label>
+</AnchorPane>

@@ -1,0 +1,56 @@
+.anchor-pane {
+    -fx-background-image: url("Space.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-position: center;
+}
+.Label-HomePage  {
+    -fx-font-family: 'hooge 05_55';
+    -fx-font-size: 34px;
+    -fx-text-fill: #ffcc00;
+    -fx-font-weight: 900;
+    -fx-effect: dropshadow(gaussian, #000000, 5, 0.5, 2, 2);
+    fx-border-color: #ffffff;
+}
+.button-Play{
+}
+.button-Settings{
+    -fx-font-family:"Monospaced";
+    -fx-pref-width: 60;
+}
+.button-Quit{
+    -fx-font-family:"Monospaced";;
+    -fx-font-size: 20px;;
+    -fx-text-fill: #ffffff;
+    -fx-background-color: #202020;
+    -fx-border-color: #ffcc00;
+    -fx-border-radius: 10px;
+    -fx-padding: 10px 30px;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+    -fx-cursor: hand;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, transparent, 0, 0, 0, 0);
+}
+.hyperlink {
+    -fx-font-family: 'hooge 05_55';
+    -fx-font-size: 15px;
+    -fx-text-fill: linear-gradient(to bottom, #FFD700, #FF8C00);
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, black, 5, 0.8, 2, 2);
+    -fx-underline: true;
+    -fx-padding: 5px;
+    -fx-transition: -fx-text-fill 0.3s ease-in-out, -fx-effect 0.3s ease-in-out;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+.hyperlink:hover {
+    -fx-text-fill: linear-gradient(to bottom, #FF4500, #FF6347);
+    -fx-effect: dropshadow(gaussian, yellow, 8, 0.8, 3, 3);
+    -fx-font-size: 16px;
+}
+.hyperlink:pressed {
+    -fx-text-fill: #FF6347;
+    -fx-effect: innershadow(gaussian, black, 10, 0.8, 2, 2);
+    -fx-font-size: 15px;
+}
