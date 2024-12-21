@@ -13,8 +13,7 @@
          <Font name="System Bold" size="29.0"/>
       </font>
    </Label>
-   <Button fx:id="playAgainBtn" layoutX="109.0" layoutY="191.0" mnemonicParsing="false" styleClass="button-Quit"
-           stylesheets="@../../../Style.css" text="Play Again?"/>
+
    <Button fx:id="quitBtn" layoutX="151.0" layoutY="251.0" mnemonicParsing="false" styleClass="button-Quit"
            stylesheets="@../../../desgin.css" text="Quit"/>
 </AnchorPane>
